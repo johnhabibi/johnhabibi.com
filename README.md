@@ -11,6 +11,12 @@ This website serves as my digital presence and portfolio, built with a focus on 
 - **Elegant Design**: Minimalist dark theme with sophisticated typography
 - **Responsive Layout**: Optimized for desktop and mobile devices
 - **Contact Form**: Functional contact system with form validation
+- **Photography Gallery**: Professional photo management with Active Storage
+  - Bulk photo upload capability
+  - Category filtering and organization
+  - Responsive image variants (WebP optimization)
+  - Lightbox viewing experience
+  - Admin interface with HTTP Basic Authentication
 - **Portfolio Sections**:
   - 📝 **Writing**: Newsletter integration and featured articles
   - 📸 **Photography**: Visual portfolio and gallery
@@ -53,15 +59,38 @@ This website serves as my digital presence and portfolio, built with a focus on 
    rails db:migrate
    ```
 
-4. **Start the development server**
+5. **Set up environment variables for admin access**
+   ```bash
+   cp .env.example .env
+   # Edit .env and set your admin credentials:
+   # ADMIN_USERNAME=your_username
+   # ADMIN_PASSWORD=your_secure_password
+   ```
+
+6. **Start the development server**
    ```bash
    bin/dev
    ```
 
-5. **Visit the application**
+7. **Visit the application**
    ```
    http://localhost:3000
    ```
+
+## 🔐 Admin Authentication
+
+The photography admin interface is protected by HTTP Basic Authentication:
+
+- **Admin URL**: `/admin/photos`
+- **Default credentials** (development):
+  - Username: `admin` 
+  - Password: `admin123`
+- **Production**: Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` environment variables
+- **Features**:
+  - Single photo upload with metadata
+  - Bulk photo upload with drag & drop
+  - Photo management (edit, delete, categorize)
+  - Category filtering and organization
 
 ## 🎨 Design Philosophy
 

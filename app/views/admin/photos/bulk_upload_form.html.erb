@@ -1,0 +1,186 @@
+<!-- Bulk Photo Upload -->
+<div class="pt-24 pb-20 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-8">
+      <%= link_to admin_photos_path, class: "inline-flex items-center text-gray-400 hover:text-white transition-colors" do %>
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Back to Photos
+      <% end %>
+    </div>
+
+    <h1 class="text-3xl font-light text-white mb-8" style="font-family: 'Crimson Text', serif;">
+      Bulk Photo Upload
+    </h1>
+
+    <div class="bg-blue-900/20 border border-blue-700 text-blue-400 px-4 py-3 rounded mb-8">
+      <p class="text-sm">
+        <strong>Tip:</strong> Upload multiple photos at once. Titles will be automatically generated from filenames.
+        You can edit individual photos later if needed.
+      </p>
+    </div>
+
+    <%= form_with model: [:admin, Photo.new], local: true, multipart: true, class: "space-y-8" do |form| %>
+      <!-- File Upload Area -->
+      <div class="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-gray-500 transition-colors" id="drop-zone">
+        <%= form.file_field :images,
+            multiple: true,
+            accept: "image/*",
+            class: "hidden",
+            id: "file-input" %>
+
+        <div id="upload-prompt">
+          <svg class="w-16 h-16 mx-auto text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+          </svg>
+          <p class="text-xl text-gray-400 mb-2">Drop photos here or click to browse</p>
+          <p class="text-sm text-gray-500">Support for JPEG, PNG, WebP files</p>
+          <button type="button" class="mt-4 px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors" onclick="document.getElementById('file-input').click()">
+            Select Photos
+          </button>
+        </div>
+
+        <!-- Preview Area -->
+        <div id="preview-area" class="hidden">
+          <p class="text-lg text-gray-300 mb-4">Selected Photos:</p>
+          <div id="preview-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-4"></div>
+          <button type="button" class="px-4 py-2 text-gray-400 hover:text-white transition-colors" onclick="clearFiles()">
+            Clear All
+          </button>
+        </div>
+      </div>
+
+      <!-- Bulk Settings -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <%= form.label :category, "Apply Category to All", class: "block text-sm font-medium text-gray-300 mb-2" %>
+          <%= form.select :category,
+              options_for_select([['No Category', '']] + Photo::CATEGORIES.map { |cat| [cat, cat] }),
+              {},
+              class: "w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+          <p class="text-xs text-gray-500 mt-1">Optional: Set the same category for all uploaded photos</p>
+        </div>
+
+        <div>
+          <%= form.label :taken_at, "Date Taken (All Photos)", class: "block text-sm font-medium text-gray-300 mb-2" %>
+          <%= form.date_field :taken_at,
+              class: "w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+          <p class="text-xs text-gray-500 mt-1">Optional: Set the same date for all photos</p>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="flex justify-end space-x-4">
+        <%= link_to "Cancel", admin_photos_path,
+            class: "px-6 py-2 text-gray-400 hover:text-white transition-colors" %>
+        <%= form.submit "Upload All Photos",
+            class: "px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors cursor-pointer",
+            id: "upload-btn",
+            disabled: true %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const dropZone = document.getElementById('drop-zone');
+  const fileInput = document.getElementById('file-input');
+  const uploadPrompt = document.getElementById('upload-prompt');
+  const previewArea = document.getElementById('preview-area');
+  const previewGrid = document.getElementById('preview-grid');
+  const uploadBtn = document.getElementById('upload-btn');
+
+  let selectedFiles = [];
+
+  // Handle file selection
+  fileInput.addEventListener('change', function(e) {
+    handleFiles(e.target.files);
+  });
+
+  // Handle drag and drop
+  dropZone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    dropZone.classList.add('border-blue-500', 'bg-blue-900/10');
+  });
+
+  dropZone.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    dropZone.classList.remove('border-blue-500', 'bg-blue-900/10');
+  });
+
+  dropZone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    dropZone.classList.remove('border-blue-500', 'bg-blue-900/10');
+    handleFiles(e.dataTransfer.files);
+  });
+
+  function handleFiles(files) {
+    selectedFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+
+    if (selectedFiles.length > 0) {
+      showPreviews();
+      uploadBtn.disabled = false;
+      uploadBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+  }
+
+  function showPreviews() {
+    uploadPrompt.classList.add('hidden');
+    previewArea.classList.remove('hidden');
+    previewGrid.innerHTML = '';
+
+    selectedFiles.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const preview = document.createElement('div');
+        preview.className = 'relative group';
+        preview.innerHTML = `
+          <img src="${e.target.result}" alt="${file.name}" class="w-full aspect-square object-cover rounded border border-gray-600">
+          <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded flex items-center justify-center">
+            <button type="button" onclick="removeFile(${index})" class="text-white hover:text-red-400 transition-colors">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+          <p class="text-xs text-gray-400 mt-1 truncate">${file.name}</p>
+        `;
+        previewGrid.appendChild(preview);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  window.removeFile = function(index) {
+    selectedFiles.splice(index, 1);
+
+    if (selectedFiles.length > 0) {
+      showPreviews();
+    } else {
+      clearFiles();
+    }
+
+    // Update file input
+    const dt = new DataTransfer();
+    selectedFiles.forEach(file => dt.items.add(file));
+    fileInput.files = dt.files;
+  };
+
+  window.clearFiles = function() {
+    selectedFiles = [];
+    fileInput.value = '';
+    uploadPrompt.classList.remove('hidden');
+    previewArea.classList.add('hidden');
+    uploadBtn.disabled = true;
+    uploadBtn.classList.add('opacity-50', 'cursor-not-allowed');
+  };
+});
+</script>
+
+<style>
+  #upload-btn:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+</style>

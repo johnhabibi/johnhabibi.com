@@ -10,6 +10,20 @@ Rails.application.routes.draw do
   get "development", to: "pages#development"
   get "download_biography", to: "pages#download_biography"
 
+  # Photo gallery routes
+  resources :photos, only: [:index, :show]
+  get "gallery", to: "photos#index"
+
+  # Admin routes (simple password protection can be added later)
+  namespace :admin do
+    resources :photos do
+      collection do
+        get :bulk_upload_form
+      end
+    end
+    root "photos#index"
+  end
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

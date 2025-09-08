@@ -1,0 +1,95 @@
+<!-- Photography Gallery -->
+<div class="pt-32 pb-20 px-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-16">
+      <h1 class="text-5xl md:text-6xl font-light text-white mb-6" style="font-family: 'Crimson Text', serif;">
+        Photography
+      </h1>
+      <p class="text-gray-300 text-lg max-w-2xl mx-auto" style="font-family: 'Inter', sans-serif;">
+        A curated collection of moments captured through light and time.
+      </p>
+    </div>
+
+    <!-- Category Filter -->
+    <div class="flex flex-wrap justify-center gap-4 mb-12">
+      <%= link_to "All",
+          photos_path,
+          class: "px-6 py-2 text-sm tracking-wide uppercase transition-all duration-300 #{@current_category.blank? ? 'text-white border-b border-white' : 'text-gray-400 hover:text-white'}" %>
+
+      <% @categories.each do |category| %>
+        <%= link_to category,
+            photos_path(category: category),
+            class: "px-6 py-2 text-sm tracking-wide uppercase transition-all duration-300 #{@current_category == category ? 'text-white border-b border-white' : 'text-gray-400 hover:text-white'}" %>
+      <% end %>
+    </div>
+
+    <!-- Gallery Grid -->
+    <% if @photos.any? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="photo-gallery">
+        <% @photos.each do |photo| %>
+          <div class="group cursor-pointer photo-item" data-category="<%= photo.category&.downcase %>">
+            <%= link_to photo_path(photo), class: "block" do %>
+              <div class="aspect-square overflow-hidden rounded-lg bg-gray-800 relative">
+                <%= image_tag photo.medium,
+                    alt: photo.title,
+                    loading: "lazy",
+                    class: "w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" %>
+
+                <!-- Overlay -->
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-end p-6">
+                  <div class="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <h3 class="font-medium text-lg mb-1"><%= photo.title %></h3>
+                    <% if photo.category.present? %>
+                      <p class="text-sm text-gray-300"><%= photo.category %></p>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center py-20">
+        <div class="text-gray-400 text-lg" style="font-family: 'Inter', sans-serif;">
+          <% if @current_category.present? %>
+            No photos found in the "<%= @current_category %>" category.
+          <% else %>
+            No photos have been uploaded yet.
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Lazy loading and smooth animations -->
+<script>
+  // Smooth scrolling and lazy loading enhancements
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add smooth reveal animation for gallery items
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, observerOptions);
+
+    // Initially hide and offset gallery items
+    const galleryItems = document.querySelectorAll('.photo-item');
+    galleryItems.forEach((item, index) => {
+      item.style.opacity = '0';
+      item.style.transform = 'translateY(20px)';
+      item.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+      observer.observe(item);
+    });
+  });
+</script>
