@@ -12,7 +12,7 @@ This website serves as my digital presence and portfolio, built with a focus on 
 - **Responsive Layout**: Optimized for desktop and mobile devices
 - **Contact Form**: Functional contact system with form validation
 - **Portfolio Sections**:
-  - 📝 **Writing**: Substack integration and featured articles
+  - 📝 **Writing**: Newsletter integration and featured articles
   - 📸 **Photography**: Visual portfolio and gallery
   - 🎵 **Music**: Audio player and streaming platform links
   - 💻 **Development**: App portfolio and technical projects

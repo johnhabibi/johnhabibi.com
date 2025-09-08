@@ -15,7 +15,7 @@
 
             <div class="space-y-4">
               <div>
-                <p class="font-medium tracking-wide">SUBSTACK WRITER</p>
+                <p class="font-medium tracking-wide">WRITER</p>
                 <p class="text-base lg:text-lg italic text-gray-400">Exploring technology, creativity, and human connection</p>
               </div>
 
@@ -49,16 +49,12 @@
         </div>
       </div>
 
-      <!-- Right side - Profile image placeholder -->
+      <!-- Right side - Profile image -->
       <div class="flex items-center justify-center lg:justify-end">
-        <div class="w-80 h-80 lg:w-96 lg:h-96 xl:w-[450px] xl:h-[450px] bg-gray-800 rounded-lg flex items-center justify-center shadow-2xl">
-          <!-- You can replace this with an actual image later -->
-          <div class="text-center text-gray-500">
-            <svg class="w-24 h-24 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"></path>
-            </svg>
-            <p class="text-sm">Profile Photo</p>
-          </div>
+        <div class="w-80 h-80 lg:w-96 lg:h-96 xl:w-[450px] xl:h-[450px] rounded-lg overflow-hidden shadow-2xl">
+          <%= image_tag "john-habibi-bio.jpg",
+              alt: "John Habibi",
+              class: "w-full h-full object-cover" %>
         </div>
       </div>
     </div>
